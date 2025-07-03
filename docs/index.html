@@ -1,0 +1,43 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>XML Loader Example</title>
+</head>
+<body>
+  <h1>Load XML File and Parse</h1>
+  <pre id="output"></pre>
+
+  <script type="module">
+    import { parseXML } from './../src/parseXML.browser.js';
+    async function loadAndParseXML() {
+      try {
+        // Fetch the XML file
+        const response = await fetch('./../test/unitdata.test.xml');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const xmlText = await response.text();
+        let data = parseXML(xmlText)
+        const units = data.getElementsByTagName('CUnit');
+        let output = '';
+        
+        const unitsArray = Array.from(units);
+        const marineUnit = unitsArray.find(unit => unit.getAttribute('id') === 'Marine');
+
+        let id = marineUnit.getAttribute('id')
+        const lifeElem = marineUnit.getElementsByTagName('LifeMax')[0];
+        const lifeVal = lifeElem.getAttribute("value");
+        output += `Unit ${id} has life: ${lifeVal}\n`;
+
+
+        document.getElementById('output').textContent = output;
+      } catch (error) {
+        console.error('Error loading or parsing XML:', error);
+      }
+    }
+
+    loadAndParseXML();
+  </script>
+</body>
+</html>
